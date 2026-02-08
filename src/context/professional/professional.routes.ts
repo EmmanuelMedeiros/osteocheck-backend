@@ -9,14 +9,23 @@ const professionalController = createProfessionalController();
 const router = Router();
 
 router.put(
+  "/professional/change/password",
+  authMiddleware(),
+  validateRequest(professionalRequest.changePassword),
+  professionalController.changePassword
+)
+
+router.put(
   "/professional/send/forgot-password-token",
   authMiddleware(),
+  validateRequest(professionalRequest.sendForgotPasswordToken),
   professionalController.sendForgotPasswordToken
 )
 
 router.put(
   "/professional/confirm/forgot-password-token",
   authMiddleware(),
+  validateRequest(professionalRequest.confirmForgotPasswordToken),
   professionalController.confirmForgotPasswordToken
 )
 

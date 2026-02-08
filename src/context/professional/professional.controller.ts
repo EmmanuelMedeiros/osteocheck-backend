@@ -8,12 +8,25 @@ export class ProfessionalController {
     this.professionalService = professionalService;
   }
 
+  changePassword = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { email, password } = req.body;
+      const { statusCode, ...response } = await this.professionalService.changePassword({
+        email,
+        password,
+      });
+      return res.status(statusCode).send(response);
+    } catch (err: any) {
+      return res.status(err.statusCode || 500).send({ error: err.message });
+    }
+  }
+
   confirmForgotPasswordToken = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { email, token } = req.body;
+      const { email, forgotPasswordToken } = req.body;
       const { statusCode, ...response } = await this.professionalService.confirmForgotPasswordToken({
         email,
-        forgotPasswordToken: token,
+        forgotPasswordToken,
       });
       return res.status(statusCode).send(response);
     } catch (err: any) {
@@ -23,7 +36,7 @@ export class ProfessionalController {
 
   sendForgotPasswordToken = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const professionalEmail = req.body.email
+      const professionalEmail = req.body.professionalEmail
       const { statusCode, ...response } = await this.professionalService.sendForgotPasswordToken(professionalEmail);
       return res.status(statusCode).send(response);
     } catch (err: any) {

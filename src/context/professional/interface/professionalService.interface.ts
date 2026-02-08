@@ -1,5 +1,6 @@
 import { ServiceResponse } from "../../../utils/serviceResponse";
 import { Patient } from "../../patients/entity/patients.entity";
+import { ChangePasswordDTO } from "../dto/changePassword.dto";
 import { ConfirmForgotPasswordTokenDTO } from "../dto/confirmForgotPasswordToken.dto";
 import { ConfirmSignupTokenDTO } from "../dto/confirmSignupToken.dto";
 import { LoginDTO } from "../dto/login.dto";
@@ -9,6 +10,7 @@ import { Professional } from "../entity/professional.entity";
 
 export interface IProfessionalService {
   signUp: (signupDTO: SignupDTO) => Promise<ServiceResponse<Professional>>;
+  changePassword: (changePasswordDTO: ChangePasswordDTO) => Promise<ServiceResponse<null>>;
   confirmSignupToken: (confirmSignupTokenDTO: ConfirmSignupTokenDTO) => Promise<ServiceResponse<null>>;
   confirmForgotPasswordToken: (confirmForgotPasswordTokenDTO: ConfirmForgotPasswordTokenDTO) => Promise<ServiceResponse<null>>;
   sendForgotPasswordToken: (professionalEmail: string) => Promise<ServiceResponse<{ token: string }>>;

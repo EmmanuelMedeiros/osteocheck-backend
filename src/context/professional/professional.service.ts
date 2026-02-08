@@ -13,6 +13,7 @@ import { ConfirmSignupTokenDTO } from './dto/confirmSignupToken.dto';
 import { generateNumericCode } from '../../utils/generateNumericCode';
 import { Patient } from '../patients/entity/patients.entity';
 import { ConfirmForgotPasswordTokenDTO } from './dto/confirmForgotPasswordToken.dto';
+import { ChangePasswordDTO } from './dto/changePassword.dto';
 
 export class ProfessionalService implements IProfessionalService {
   private professionalRepository: Repository<Professional>;
@@ -25,6 +26,24 @@ export class ProfessionalService implements IProfessionalService {
     this.professionalRepository = professionalRepository;
     this.encrypt = encrypt;
     this.jwtService = jwtService;
+  }
+
+  changePassword = async (changePasswordDTO: ChangePasswordDTO): Promise<ServiceResponse<null>> => {
+    const professional = await this.findProfessionalByEmail(changePasswordDTO.email);
+    if (!professional) {
+      throw HttpResponse.badRequest({
+        message: 'Não foi encontrado nenhum profissional com esse e-mail'
+      });
+    }
+    await this.update({
+      id: professional.id,
+      password: changePasswordDTO.password,
+    });
+    return serviceResponse(
+      HttpResponse.success({
+        message: 'Senha alterada com sucesso!',
+      }),
+    );
   }
 
   sendForgotPasswordToken = async (professionalEmail: string): Promise<ServiceResponse<{ token: string; }>> => {
@@ -150,6 +169,11 @@ export class ProfessionalService implements IProfessionalService {
 
   update = async (updateDTO: UpdateUserDTO): Promise<ServiceResponse<Professional>> => {
     const user = await this.findById(updateDTO.id);
+
+    if (updateDTO.password) {
+      const encryptedPassword = this.encrypt.encrypt(updateDTO.password)
+      updateDTO.password = encryptedPassword ?? updateDTO.password;
+    }
 
     const updateResults = await this.professionalRepository.update(
       {
