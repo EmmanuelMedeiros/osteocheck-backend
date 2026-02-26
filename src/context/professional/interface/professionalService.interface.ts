@@ -19,4 +19,5 @@ export interface IProfessionalService {
   getAll: () => Promise<ServiceResponse<Pick<Professional, 'id' | 'createdAt' | 'email' | 'name'>[]>>;
   update: (updateDTO: UpdateUserDTO) => Promise<ServiceResponse<Professional>>;
   getProfessionalPatients: (professionalId: number) => Promise<ServiceResponse<Patient>>;
+  getProfile: (professionalId: number) => Promise<ServiceResponse<Professional>>;
 }

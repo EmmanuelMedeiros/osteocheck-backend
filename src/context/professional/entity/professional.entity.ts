@@ -4,9 +4,8 @@ import {
   Column,
   DeleteDateColumn,
   ManyToMany,
-  OneToMany,
+  JoinTable,
 } from "typeorm";
-import { ProfessionalPatients } from '../../professionalPatients/entity/professionalPatients.entity'
 import { Patient } from "../../patients/entity/patients.entity";
 
 @Entity({
@@ -34,11 +33,13 @@ export class Professional {
   @Column()
   hasConfirmedAccount!: boolean;
 
-  @OneToMany(
-    () => ProfessionalPatients,
-    (pp) => pp.professional 
-  )
-  patientRelations!: ProfessionalPatients[];
+  @ManyToMany(() => Patient)
+  @JoinTable({
+    name: 'professionalPatients',
+    joinColumn: { name: 'professionalId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'patientId', referencedColumnName: 'id' },
+  })
+  patients!: Patient[];
 
   @Column()
   createdAt!: Date;

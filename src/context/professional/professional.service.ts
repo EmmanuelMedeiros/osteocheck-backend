@@ -14,6 +14,8 @@ import { generateNumericCode } from '../../utils/generateNumericCode';
 import { Patient } from '../patients/entity/patients.entity';
 import { ConfirmForgotPasswordTokenDTO } from './dto/confirmForgotPasswordToken.dto';
 import { ChangePasswordDTO } from './dto/changePassword.dto';
+import { IEmailService } from '../../commons/email/emailService.interface';
+import { EmailType } from '../../commons/email/enum/emailType.enum';
 
 export class ProfessionalService implements IProfessionalService {
   private professionalRepository: Repository<Professional>;
@@ -22,10 +24,13 @@ export class ProfessionalService implements IProfessionalService {
 
   private encrypt: IEncrypt;
 
-  constructor(professionalRepository: Repository<Professional>, encrypt: IEncrypt, jwtService: IJwtService) {
+  private emailService: IEmailService;
+
+  constructor(professionalRepository: Repository<Professional>, encrypt: IEncrypt, jwtService: IJwtService, emailService: IEmailService) {
     this.professionalRepository = professionalRepository;
     this.encrypt = encrypt;
     this.jwtService = jwtService;
+    this.emailService = emailService;
   }
 
   changePassword = async (changePasswordDTO: ChangePasswordDTO): Promise<ServiceResponse<null>> => {
@@ -100,9 +105,7 @@ export class ProfessionalService implements IProfessionalService {
   getProfessionalPatients = async (professionalId: number): Promise<ServiceResponse<Patient>> => {
     const thisProfessionalPatients = await this.professionalRepository.findOne({
       relations: {
-        patientRelations: {
-          patient: true,
-        },
+        patients: true,
       },
       where: {
         id: professionalId,
@@ -112,6 +115,21 @@ export class ProfessionalService implements IProfessionalService {
     return serviceResponse(HttpResponse.success({
       data: thisProfessionalPatients,
     }))
+  }
+
+  getProfile = async (professionalId: number): Promise<ServiceResponse<Professional>> => {
+    const professional = await this.professionalRepository.findOne({
+      where: { id: professionalId },
+      select: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'hasConfirmedAccount'],
+    });
+
+    if (!professional) {
+      throw HttpResponse.badRequest({
+        message: 'Profissional não encontrado',
+      });
+    }
+
+    return serviceResponse(HttpResponse.success({ data: professional }));
   }
 
   private findProfessionalByEmail = async (email: string): Promise<Professional | null> => {
@@ -143,6 +161,7 @@ export class ProfessionalService implements IProfessionalService {
         hasConfirmedAccount: true,
       }
     );
+
     return serviceResponse({
       statusCode: 200,
       data: null,
@@ -262,6 +281,15 @@ export class ProfessionalService implements IProfessionalService {
         password: hashedPassword,
         accountConfirmationToken: accountConfirmationToken,
       });
+
+      this.emailService.sendEmail({
+        emailAddress: signupDTO.email,
+        emailType: EmailType.LoginConfirmation,
+        payload: {
+          code: accountConfirmationToken,
+        }
+      });
+
       return serviceResponse(
         HttpResponse.created({
           data: { ...signupDTO, password: hashedPassword },

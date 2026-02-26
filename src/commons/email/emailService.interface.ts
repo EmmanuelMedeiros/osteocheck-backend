@@ -1,3 +1,5 @@
+import { EmailPayload } from "./type/emailPayload.type";
+
 export interface IEmailService {
-  sendEmail: (emailAddress: string[], payload: any) => Promise<void>;
+  sendEmail: (emailPayload: EmailPayload) => Promise<void>;
 }

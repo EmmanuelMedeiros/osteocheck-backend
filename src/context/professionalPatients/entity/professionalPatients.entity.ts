@@ -25,7 +25,7 @@ export class ProfessionalPatients {
   })
   patientId!: number;
 
-  @ManyToOne(() => Professional, (professional) => professional.patientRelations)
+  @ManyToOne(() => Professional, (professional) => professional.patients)
   @JoinColumn({
     name: 'professionalId'
   })

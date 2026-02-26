@@ -33,6 +33,12 @@ router.post(
 );
 
 router.get(
+  "/professional/profile",
+  authMiddleware(),
+  professionalController.getProfile
+)
+
+router.get(
   "/professional/patients",
   authMiddleware(),
   professionalController.getProfessionalPatients

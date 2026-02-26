@@ -54,6 +54,16 @@ export class ProfessionalController {
     }
   }
 
+  getProfile = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const professionalId = req.professional.id;
+      const { statusCode, ...response } = await this.professionalService.getProfile(professionalId);
+      return res.status(statusCode).send(response);
+    } catch (err: any) {
+      return res.status(err.statusCode || 500).send({ error: err.message });
+    }
+  }
+
   confirmSignupToken = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { email, signupToken } = req.body;
@@ -90,6 +100,7 @@ export class ProfessionalController {
       });
       return res.status(statusCode).send(response);
     } catch (err: any) {
+      console.log(err);
       return res.status(err.statusCode || 500).send({ error: err.message });
     }
   };
