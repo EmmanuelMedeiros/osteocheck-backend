@@ -72,7 +72,7 @@ export class PatientsService implements IPatientsService {
 
       const newProfessionalPatient = new ProfessionalPatients();
       newProfessionalPatient.patient = { id: patient.id } as Relation<Patient>;
-      newProfessionalPatient.professional = { id: createPatientDTO.professionalId } as Relation<Professional>; 
+      newProfessionalPatient.professional = { id: createPatientDTO.professionalId } as Relation<Professional>;
       await queryRunner.manager.save(ProfessionalPatients, newProfessionalPatient);
 
       await queryRunner.commitTransaction();

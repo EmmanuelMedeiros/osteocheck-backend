@@ -23,4 +23,14 @@ export class PatientsController {
       return res.status(err.statusCode || 500).send({ error: err.message });
     }
   }
+
+  getById = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const patientId = Number(req.params.id);
+      const { statusCode, ...response } = await this.patientsService.findById(patientId);
+      return res.status(statusCode).send(response);
+    } catch (err: any) {
+      return res.status(err.statusCode || 500).send({ error: err.message });
+    }
+  }
 }

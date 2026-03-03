@@ -9,5 +9,6 @@ const patientsController = createPatientsController();
 const router = Router();
 
 router.post('/patients', authMiddleware(), validateRequest(patientsRequest.create), patientsController.create);
+router.get('/patients/:id', authMiddleware(), patientsController.getById);
 
 export default router;
