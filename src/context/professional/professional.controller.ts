@@ -64,6 +64,22 @@ export class ProfessionalController {
     }
   }
 
+  getLastQuestionnaireResponses = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      let paginationOptions: { page: number, limit: number } | undefined = undefined;
+      const professionalId = req.professional.id;
+      const { page, limit } = req.query;
+      if (page && limit) {
+        paginationOptions = { page: Number(page), limit: Number(limit) }
+      }
+
+      const { statusCode, ...response } = await this.professionalService.getLastQuestionnaireResponses(professionalId, paginationOptions);
+      return res.status(statusCode).send(response.data);
+    } catch (err: any) {
+      return res.status(err.statusCode || 500).send({ error: err.message });
+    }
+  }
+
   confirmSignupToken = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { email, signupToken } = req.body;

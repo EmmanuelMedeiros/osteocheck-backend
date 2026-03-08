@@ -9,5 +9,6 @@ const router = Router();
 
 router.post('/questionnaire/next-question', authMiddleware(), questionnaireController.nextQuestion);
 router.get('/questionnaire/progress', authMiddleware(), validateRequest(questionnaireRequest.getQuestionnaireProgress), questionnaireController.getQuestionnaireProgress);
+router.post('/questionnaire/:id/pdf', authMiddleware(), validateRequest(questionnaireRequest.generatePdf), questionnaireController.generatePdf);
 
 export default router;

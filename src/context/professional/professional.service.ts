@@ -16,9 +16,13 @@ import { ConfirmForgotPasswordTokenDTO } from './dto/confirmForgotPasswordToken.
 import { ChangePasswordDTO } from './dto/changePassword.dto';
 import { IEmailService } from '../../commons/email/emailService.interface';
 import { EmailType } from '../../commons/email/enum/emailType.enum';
+import { QuestionnaireResponse } from '../questionnaire/entity/questionnaireResponse.entity';
+import { PaginationOptions, PaginationResult, paginate } from '../../utils/pagination';
 
 export class ProfessionalService implements IProfessionalService {
   private professionalRepository: Repository<Professional>;
+
+  private questionnaireResponseRepository: Repository<QuestionnaireResponse>;
 
   private jwtService: IJwtService;
 
@@ -26,11 +30,18 @@ export class ProfessionalService implements IProfessionalService {
 
   private emailService: IEmailService;
 
-  constructor(professionalRepository: Repository<Professional>, encrypt: IEncrypt, jwtService: IJwtService, emailService: IEmailService) {
+  constructor(
+    professionalRepository: Repository<Professional>,
+    encrypt: IEncrypt,
+    jwtService: IJwtService,
+    emailService: IEmailService,
+    questionnaireResponseRepository: Repository<QuestionnaireResponse>
+  ) {
     this.professionalRepository = professionalRepository;
     this.encrypt = encrypt;
     this.jwtService = jwtService;
     this.emailService = emailService;
+    this.questionnaireResponseRepository = questionnaireResponseRepository;
   }
 
   changePassword = async (changePasswordDTO: ChangePasswordDTO): Promise<ServiceResponse<null>> => {
@@ -115,6 +126,33 @@ export class ProfessionalService implements IProfessionalService {
     return serviceResponse(HttpResponse.success({
       data: thisProfessionalPatients,
     }))
+  }
+
+  getLastQuestionnaireResponses = async (
+    professionalId: number,
+    paginationOptions?: PaginationOptions
+  ): Promise<ServiceResponse<PaginationResult<QuestionnaireResponse>>> => {
+    try {
+      const paginatedResponses = await paginate(
+        this.questionnaireResponseRepository,
+        {
+          where: {
+            professionalId,
+          },
+          relations: {
+            patient: true,
+          },
+          order: {
+            createdAt: 'DESC',
+          },
+        },
+        paginationOptions ?? { limit: 10, page: 1 }
+      );
+
+      return serviceResponse(HttpResponse.success({ data: paginatedResponses }));
+    } catch (err) {
+      throw err;
+    }
   }
 
   getProfile = async (professionalId: number): Promise<ServiceResponse<Professional>> => {

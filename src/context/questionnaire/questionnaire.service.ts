@@ -16,7 +16,9 @@ import { IQuestionnaireRules } from "./interface/questionnaireRules.interface";
 import { QuestionnaireResultType } from "./enum/questionnaireResultType.enum";
 import { QuestionnaireResult } from "./entity/questionnaireResult.entity";
 import { QuestionnaireType } from "./enum/questionnaireType.enum";
-
+import PDFDocument from 'pdfkit';
+import { GeneratePdfDTO } from "./dto/generatePdf.dto";
+import { Professional } from "../professional/entity/professional.entity";
 export class QuestionnaireService implements IQuestionnaireService {
   private patientsService: IPatientsService;
   private questionnaireRepository: Repository<Questionnaire>;
@@ -341,6 +343,100 @@ export class QuestionnaireService implements IQuestionnaireService {
         questionId: lastAnswer.questionId,
         questionOptionsIds,
       }
+    }));
+  }
+
+  generatePdf = async (generatePdfDTO: GeneratePdfDTO): Promise<ServiceResponse<Buffer>> => {
+    const questionnaireResponse = await this.questionnaireResponseRepository.findOne({
+      relations: {
+        patient: true,
+        answers: {
+          question: true,
+          option: true,
+        },
+      },
+      where: {
+        id: generatePdfDTO.id,
+      },
+      order: {
+        answers: {
+          createdAt: 'ASC',
+        },
+      },
+    });
+
+    if (!questionnaireResponse || questionnaireResponse.status !== ResponseStatus.COMPLETED) {
+      throw HttpResponse.badRequest({
+        message: 'Não é possível visualizar o PDF desse questionário. Ainda não foi finalizado.',
+      });
+    }
+
+    const professional = await this.dataSource.getRepository(Professional).findOne({
+      where: { id: generatePdfDTO.professionalId }
+    });
+
+    if (!professional) {
+      throw HttpResponse.notFound({
+        message: 'Profissional não encontrado.',
+      });
+    }
+
+    const pdfBuffer: Buffer = await new Promise((resolve, reject) => {
+      const doc = new PDFDocument({ margin: 50 });
+      const buffers: Buffer[] = [];
+
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        const pdfData = Buffer.concat(buffers);
+        resolve(pdfData);
+      });
+      doc.on('error', reject);
+
+      // Title
+      doc.fontSize(20).text('Relatório de Questionário', { align: 'center' }).moveDown(1.5);
+
+      // Professional Info
+      doc.fontSize(14).text('Informações do Profissional', { underline: true }).moveDown(0.5);
+      doc.fontSize(12).text(`Nome: ${professional.name}`);
+      doc.text(`E-mail: ${professional.email}`).moveDown(1);
+
+      // Patient Info
+      doc.fontSize(14).text('Informações do Paciente', { underline: true }).moveDown(0.5);
+      doc.fontSize(12).text(`Nome: ${questionnaireResponse.patient.name}`);
+      doc.text(`CPF: ${questionnaireResponse.patient.cpf}`);
+      doc.text(`Data de Nascimento: ${dayjs(questionnaireResponse.patient.dateOfBirth).format('DD/MM/YYYY')}`);
+      doc.text(`Gênero: ${questionnaireResponse.patient.gender}`).moveDown(1.5);
+
+      // QA
+      doc.fontSize(14).text('Respostas do Questionário', { underline: true }).moveDown(0.5);
+
+      const questionMap = new Map<number, { text: string; options: string[] }>();
+
+      questionnaireResponse.answers.forEach(answer => {
+        if (!questionMap.has(answer.questionId)) {
+          questionMap.set(answer.questionId, {
+            text: answer.question.text,
+            options: []
+          });
+        }
+        const qEntry = questionMap.get(answer.questionId)!;
+        if (answer.option) {
+          qEntry.options.push(answer.option.text);
+        } else if (answer.textAnswer) {
+          qEntry.options.push(answer.textAnswer);
+        }
+      });
+
+      Array.from(questionMap.values()).forEach((qEntry, index) => {
+        doc.fontSize(12).font('Helvetica-Bold').text(`${index + 1}. ${qEntry.text}`);
+        doc.font('Helvetica').text(`Resposta(s): ${qEntry.options.join(', ')}`).moveDown(0.8);
+      });
+
+      doc.end();
+    });
+
+    return serviceResponse(HttpResponse.success({
+      data: pdfBuffer,
     }));
   }
 }

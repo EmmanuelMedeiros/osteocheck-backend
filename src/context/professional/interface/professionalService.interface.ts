@@ -7,6 +7,8 @@ import { LoginDTO } from "../dto/login.dto";
 import { SignupDTO } from "../dto/signup.dto";
 import { UpdateUserDTO } from "../dto/update.dto";
 import { Professional } from "../entity/professional.entity";
+import { QuestionnaireResponse } from "../../questionnaire/entity/questionnaireResponse.entity";
+import { PaginationOptions, PaginationResult } from "../../../utils/pagination";
 
 export interface IProfessionalService {
   signUp: (signupDTO: SignupDTO) => Promise<ServiceResponse<Professional>>;
@@ -20,4 +22,5 @@ export interface IProfessionalService {
   update: (updateDTO: UpdateUserDTO) => Promise<ServiceResponse<Professional>>;
   getProfessionalPatients: (professionalId: number) => Promise<ServiceResponse<Patient>>;
   getProfile: (professionalId: number) => Promise<ServiceResponse<Professional>>;
+  getLastQuestionnaireResponses: (professionalId: number, paginationOptions?: PaginationOptions) => Promise<ServiceResponse<PaginationResult<QuestionnaireResponse>>>;
 }

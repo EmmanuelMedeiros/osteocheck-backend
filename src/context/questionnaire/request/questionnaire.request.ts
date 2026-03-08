@@ -15,6 +15,16 @@ class QuestionnaireRequest {
 
         return querySchema.safeParse(req.query);
     }
+
+    generatePdf(req: Request) {
+        const paramSchema = zod.object({
+            id: zod.coerce.number({
+                error: "É preciso informar o id da resposta do questionário",
+            }),
+        });
+
+        return paramSchema.safeParse(req.params);
+    }
 }
 
 export default new QuestionnaireRequest();

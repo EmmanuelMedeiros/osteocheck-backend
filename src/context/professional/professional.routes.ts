@@ -44,6 +44,12 @@ router.get(
   professionalController.getProfessionalPatients
 )
 
+router.get(
+  "/professional/patients/questionnaire-responses",
+  authMiddleware(),
+  professionalController.getLastQuestionnaireResponses
+)
+
 router.post(
   "/professional/confirm-signup-token",
   validateRequest(professionalRequest.confirmSignupToken),

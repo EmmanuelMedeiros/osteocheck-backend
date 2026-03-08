@@ -43,4 +43,23 @@ export class QuestionnaireController {
       return res.status(err.statusCode || 500).send({ error: err.message });
     }
   }
+
+  generatePdf = async (req: Request, res: Response): Promise<Response | void> => {
+    try {
+      const professionalId = req.professional.id;
+      const id = Number(req.params.id);
+
+      const response = await this.questionnaireService.generatePdf({
+        id,
+        professionalId,
+      });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=relatorio-${id}.pdf`);
+      return res.status(response.statusCode).send(response.data);
+    } catch (err: any) {
+      console.log(err);
+      return res.status(err.statusCode || 500).send({ error: err.message });
+    }
+  }
 }
