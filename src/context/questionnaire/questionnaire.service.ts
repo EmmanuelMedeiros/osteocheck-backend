@@ -354,6 +354,7 @@ export class QuestionnaireService implements IQuestionnaireService {
           question: true,
           option: true,
         },
+        result: true,
       },
       where: {
         id: generatePdfDTO.id,
@@ -431,6 +432,21 @@ export class QuestionnaireService implements IQuestionnaireService {
         doc.fontSize(12).font('Helvetica-Bold').text(`${index + 1}. ${qEntry.text}`);
         doc.font('Helvetica').text(`Resposta(s): ${qEntry.options.join(', ')}`).moveDown(0.8);
       });
+
+      if (questionnaireResponse.result && questionnaireResponse.result.text) {
+        doc.moveDown(1);
+        doc.fontSize(14).font('Helvetica-Bold').text('Diagnóstico do Questionário', { underline: true }).moveDown(1);
+
+        const cleanText = questionnaireResponse.result.text
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/__(.*?)__/g, '$1')
+          .replace(/_(.*?)_/g, '$1')
+          .replace(/^#+\s+/gm, '')
+          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+
+        doc.fontSize(12).font('Helvetica').text(cleanText);
+      }
 
       doc.end();
     });

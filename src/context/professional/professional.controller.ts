@@ -73,8 +73,8 @@ export class ProfessionalController {
         paginationOptions = { page: Number(page), limit: Number(limit) }
       }
 
-      const { statusCode, ...response } = await this.professionalService.getLastQuestionnaireResponses(professionalId, paginationOptions);
-      return res.status(statusCode).send(response.data);
+      const response = await this.professionalService.getLastQuestionnaireResponses(professionalId, paginationOptions);
+      return res.status(200).send(response);
     } catch (err: any) {
       return res.status(err.statusCode || 500).send({ error: err.message });
     }
@@ -82,10 +82,10 @@ export class ProfessionalController {
 
   confirmSignupToken = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { email, signupToken } = req.body;
+      const { professionalEmail, signupToken } = req.body;
       const { statusCode, ...response } = await this.professionalService.confirmSignupToken({
-        professionalEmail: email,
-        signupToken: signupToken,
+        professionalEmail,
+        signupToken,
       });
       return res.status(statusCode).send(response);
     } catch (err: any) {

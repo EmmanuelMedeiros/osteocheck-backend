@@ -22,5 +22,5 @@ export interface IProfessionalService {
   update: (updateDTO: UpdateUserDTO) => Promise<ServiceResponse<Professional>>;
   getProfessionalPatients: (professionalId: number) => Promise<ServiceResponse<Patient>>;
   getProfile: (professionalId: number) => Promise<ServiceResponse<Professional>>;
-  getLastQuestionnaireResponses: (professionalId: number, paginationOptions?: PaginationOptions) => Promise<ServiceResponse<PaginationResult<QuestionnaireResponse>>>;
+  getLastQuestionnaireResponses: (professionalId: number, paginationOptions?: PaginationOptions) => Promise<PaginationResult<QuestionnaireResponse>>;
 }

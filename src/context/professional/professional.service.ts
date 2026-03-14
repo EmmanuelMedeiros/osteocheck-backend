@@ -131,7 +131,7 @@ export class ProfessionalService implements IProfessionalService {
   getLastQuestionnaireResponses = async (
     professionalId: number,
     paginationOptions?: PaginationOptions
-  ): Promise<ServiceResponse<PaginationResult<QuestionnaireResponse>>> => {
+  ): Promise<PaginationResult<QuestionnaireResponse>> => {
     try {
       const paginatedResponses = await paginate(
         this.questionnaireResponseRepository,
@@ -149,7 +149,7 @@ export class ProfessionalService implements IProfessionalService {
         paginationOptions ?? { limit: 10, page: 1 }
       );
 
-      return serviceResponse(HttpResponse.success({ data: paginatedResponses }));
+      return paginatedResponses;
     } catch (err) {
       throw err;
     }
@@ -173,7 +173,7 @@ export class ProfessionalService implements IProfessionalService {
   private findProfessionalByEmail = async (email: string): Promise<Professional | null> => {
     return await this.professionalRepository.findOne({
       where: {
-        email,
+        email: email.toLowerCase(),
       },
     });
   }
