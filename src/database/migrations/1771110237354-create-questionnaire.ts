@@ -337,12 +337,6 @@ export class CreateQuestionnaire1771110237354 implements MigrationInterface {
       RETURNING id;
     `);
 
-    const q4NoResult = await queryRunner.query(`
-      INSERT INTO "questionOptions" ("questionId", text, value, "order", "nextQuestionId", "createdAt")
-      VALUES (${q4Id}, 'Não', 'no_bone_exposure', 1, ${q6Id}, NOW())
-      RETURNING id;
-    `);
-
     console.log(`✅ Question Q4 (Bone Exposure) created with branching logic (ID: ${q4Id})`);
 
     // ============================================================
@@ -434,6 +428,12 @@ export class CreateQuestionnaire1771110237354 implements MigrationInterface {
       RETURNING id;
     `);
     const q8Id = q8Result[0].id;
+
+    const q4NoResult = await queryRunner.query(`
+      INSERT INTO "questionOptions" ("questionId", text, value, "order", "nextQuestionId", "createdAt")
+      VALUES (${q4Id}, 'Não', 'no_bone_exposure', 1, ${q8Id}, NOW())
+      RETURNING id;
+    `);
 
     const groupHOptions = [
       { text: 'Dor óssea inespecífica na maxila/mandíbula', value: 'h_nonspecific_bone_pain' },

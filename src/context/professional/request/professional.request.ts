@@ -12,7 +12,11 @@ class ProfessionalRequest {
       email: zod.email("É necessário informar o endereço de e-mail"),
       password: zod
         .string("A senha precisa ser um texto")
-        .min(5, "A senha precisa conter no mínimo 5 caracteres"),
+        .min(8, "A senha precisa conter no mínimo 8 caracteres")
+        .regex(/[A-Z]/, "A senha precisa conter pelo menos uma letra maiúscula")
+        .regex(/[a-z]/, "A senha precisa conter pelo menos uma letra minúscula")
+        .regex(/[0-9]/, "A senha precisa conter pelo menos um número")
+        .regex(/[^A-Za-z0-9]/, "A senha precisa conter pelo menos um caractere especial"),
     });
 
     return confirmForgotPasswordTokenSchema.safeDecode(req.body);
@@ -40,7 +44,11 @@ class ProfessionalRequest {
       email: zod.email("É necessário informar o endereço de e-mail"),
       password: zod
         .string("A senha precisa ser um texto")
-        .min(5, "A senha precisa conter no mínimo 5 caracteres"),
+        .min(8, "A senha precisa conter no mínimo 8 caracteres")
+        .regex(/[A-Z]/, "A senha precisa conter pelo menos uma letra maiúscula")
+        .regex(/[a-z]/, "A senha precisa conter pelo menos uma letra minúscula")
+        .regex(/[0-9]/, "A senha precisa conter pelo menos um número")
+        .regex(/[^A-Za-z0-9]/, "A senha precisa conter pelo menos um caractere especial"),
       name: zod
         .string("É preciso informar o nome")
         .min(2, "O nome precisa ter no mínimo 2 caracteres")

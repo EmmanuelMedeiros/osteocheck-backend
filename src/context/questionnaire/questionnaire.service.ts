@@ -227,7 +227,6 @@ export class QuestionnaireService implements IQuestionnaireService {
       const questionnaireSpecificRule = await this.questionnaireRules.orchestrateQuestionRule(nextQuestionDTO.questionId, nextQuestionDTO.questionOptionsIds)
       if (questionnaireSpecificRule) {
         if (questionnaireSpecificRule.isTerminal) {
-          console.log(questionnaireSpecificRule);
           await this.handleQuestionnaireResponseSession(nextQuestionDTO, true, questionnaireSpecificRule.questionnaireResultType);
           return serviceResponse(HttpResponse.success({
             data: null,

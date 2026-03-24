@@ -59,6 +59,12 @@ export class JawAssessmentQuestionnaireRules implements IQuestionnaireRules {
         questionOptions,
       });
     }
+    if (question.group.order === 7 && question.order === 0) {
+      return this.stageZeroAlertsQuestionRule({
+        question,
+        questionOptions,
+      });
+    }
     return this.terminalOptions(question, questionOptions);
   }
 
@@ -123,4 +129,17 @@ export class JawAssessmentQuestionnaireRules implements IQuestionnaireRules {
       nextQuestionId: nextQuestion.id,
     }
   }
+
+  private stageZeroAlertsQuestionRule = (rulePayload: RuleRequiredPayload): QuestionnaireRuleReturn => {
+    if (rulePayload.questionOptions.length > 0) {
+      return {
+        isTerminal: true,
+        questionnaireResultType: QuestionnaireResultType.OnmRmSuspectionOnStageZero,
+      }
+    }
+    return {
+      isTerminal: true,
+      questionnaireResultType: QuestionnaireResultType.OnmRmRisk,
+    }
+  };
 }
