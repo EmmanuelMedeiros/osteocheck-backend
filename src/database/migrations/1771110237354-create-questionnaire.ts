@@ -317,10 +317,10 @@ export class CreateQuestionnaire1771110237354 implements MigrationInterface {
     const q6Result = await queryRunner.query(`
       INSERT INTO questions ("groupId", text, type, "order", "isRequired", "helpText", "createdAt", "updatedAt")
       VALUES (
-        ${groups.GROUP_F},
+        ${groups.GROUP_D},
         'Confirme a presença dos seguintes critérios diagnósticos de ONM-RM:',
         'multipleChoice',
-        0,
+        1,
         true,
         'Todos os três critérios devem estar presentes para diagnóstico de ONM-RM estabelecida',
         NOW(),
@@ -332,12 +332,41 @@ export class CreateQuestionnaire1771110237354 implements MigrationInterface {
 
     // Q4 Options with branching
     const q4YesResult = await queryRunner.query(`
-      INSERT INTO "questionOptions" ("questionId", text, value, "order", "isTerminal", "createdAt")
-      VALUES (${q4Id}, 'Sim', 'yes_bone_exposure', 0, true, NOW())
+      INSERT INTO "questionOptions" ("questionId", text, value, "order", "nextQuestionId", "createdAt")
+      VALUES (${q4Id}, 'Sim', 'yes_bone_exposure', 0, ${q6Id}, NOW())
       RETURNING id;
     `);
 
     console.log(`✅ Question Q4 (Bone Exposure) created with branching logic (ID: ${q4Id})`);
+
+    // ============================================================
+    // Q4b: CLASSIFICATION (Group D - Last Question)
+    // ============================================================
+    const q4bResult = await queryRunner.query(`
+      INSERT INTO questions ("groupId", text, type, "order", "isRequired", "helpText", "createdAt", "updatedAt")
+      VALUES (
+        ${groups.GROUP_D},
+        'Classificação do Estágio. Selecione qual opção dos achados clínicos melhor se encaixa ao seu paciente:',
+        'singleChoice',
+        2,
+        true,
+        '',
+        NOW(),
+        NOW()
+      )
+      RETURNING id;
+    `);
+    const q4bId = q4bResult[0].id;
+
+    await queryRunner.query(`
+      INSERT INTO "questionOptions" ("questionId", text, value, "order", "createdAt")
+      VALUES
+        (${q4bId}, 'Estágio 1: Osso exposto ou fístula sondável em paciente assintomático, sem infecção.', 'd_stage_1', 0, NOW()),
+        (${q4bId}, 'Estágio 2: Osso exposto ou fístula sondável com dor, eritema e/ou infecção secundária (supuração).', 'd_stage_2', 1, NOW()),
+        (${q4bId}, 'Estágio 3: Osso exposto extenso com dor intensa, infecção e uma ou mais das seguintes complicações: \ni. \nii. \niii. \niv. \nFratura patológica \nFístula extraoral \nComunicação oroantral/oronasal \nOsteólise estendendo-se à borda inferior da mandíbula ou assoalho do seio maxilar.', 'd_stage_3', 2, NOW());
+    `);
+
+    console.log(`✅ Question Q4b (Classification Group D) created (ID: ${q4bId})`);
 
     // ============================================================
     // Q5: STAGE 0 WARNING SIGNS (Group E)

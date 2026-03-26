@@ -53,7 +53,7 @@ export class JawAssessmentQuestionnaireRules implements IQuestionnaireRules {
         questionOptions,
       });
     }
-    if (question.group.order === 6 && question.order === 0) {
+    if (question.group.order === 3 && question.order === 1) {
       return await this.diagnosisCriteriaQuestionRule({
         question,
         questionOptions,
@@ -72,16 +72,13 @@ export class JawAssessmentQuestionnaireRules implements IQuestionnaireRules {
     if (question.group.order === 0 && question.order === 0 && questionOptions.find(qo => qo.isTerminal === true && qo.order === 1)) {
       return { isTerminal: true, questionnaireResultType: QuestionnaireResultType.OnmRmInsignificantRisk };
     }
-    if (question.group.order === 3 && question.order === 0 && questionOptions.find(qo => qo.order === 0)) {
-      return { isTerminal: true, questionnaireResultType: QuestionnaireResultType.OnmRmEstablished }
-    }
-    if (question.group.order === 6 && question.order === 0) {
+    if ((question.group.order === 6 && question.order === 0) || (question.group.order === 3 && question.order === 1)) {
       const finalResult = { isTerminal: true, questionnaireResultType: QuestionnaireResultType.StageThree };
       if (questionOptions.find(qo => qo.order === 0)) {
         finalResult.questionnaireResultType = QuestionnaireResultType.StageOne;
       }
       if (questionOptions.find(qo => qo.order === 1)) {
-        finalResult.questionnaireResultType === QuestionnaireResultType.StageTwo;
+        finalResult.questionnaireResultType = QuestionnaireResultType.StageTwo;
       }
       return finalResult;
     }
@@ -101,6 +98,7 @@ export class JawAssessmentQuestionnaireRules implements IQuestionnaireRules {
     }
   };
 
+
   private diagnosisCriteriaQuestionRule = async (rulePayload: RuleRequiredPayload): Promise<QuestionnaireRuleReturn> => {
     if (rulePayload.questionOptions.length < 3) {
       return {
@@ -118,7 +116,10 @@ export class JawAssessmentQuestionnaireRules implements IQuestionnaireRules {
           }
         }
       }
-    })
+    });
+    console.log('essa é a próxima questão');
+    console.log(nextQuestion);
+
     if (!nextQuestion) {
       throw HttpResponse.notFound({
         message: 'Não foi encontrada a próxima questão para essa resposta',

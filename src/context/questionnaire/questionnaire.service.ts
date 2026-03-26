@@ -100,6 +100,7 @@ export class QuestionnaireService implements IQuestionnaireService {
       });
     }
     const currentQuestionGroup = currentQuestion.group;
+
     const nextQuestion = await this.questionRepository.findOne({
       relations: {
         options: true,
@@ -109,7 +110,7 @@ export class QuestionnaireService implements IQuestionnaireService {
         {
           order: currentQuestion.order + 1,
           group: {
-            order: currentQuestion.order,
+            order: currentQuestionGroup.order,
           }
         },
         {
@@ -120,6 +121,7 @@ export class QuestionnaireService implements IQuestionnaireService {
         },
       ],
     });
+
     await this.handleQuestionnaireResponseSession(nextQuestionDTO);
     return serviceResponse(HttpResponse.success({
       data: nextQuestion,
@@ -232,6 +234,9 @@ export class QuestionnaireService implements IQuestionnaireService {
             data: null,
             message: 'Questionário finalizado com sucesso!',
           }));
+        }
+        if (questionnaireSpecificRule.nextQuestionId) {
+          return await this.handleOptionWithNextQuestionId(questionnaireSpecificRule.nextQuestionId, nextQuestionDTO);
         }
       }
     }
