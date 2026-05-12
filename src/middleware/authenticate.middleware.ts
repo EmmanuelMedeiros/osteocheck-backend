@@ -22,13 +22,13 @@ export function authMiddleware() {
 function extractBearerToken(token: string | undefined) {
   if (!token) {
     throw HttpResponse.unauthorized({
-      message: "JWT Token must be present in this request",
+      message: "JWT Token não fornecido!",
     });
   }
   const splittedToken = token.split("Bearer ");
   if (!splittedToken[1]) {
     throw HttpResponse.badRequest({
-      message: "Malformed bearer token",
+      message: "Token malformado!",
     });
   }
   return splittedToken[1];

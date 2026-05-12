@@ -169,7 +169,8 @@ export class CreateQuestionnaire1771110237354 implements MigrationInterface {
         (${q2aId}, 'Bisfosfonato Oral', 'bisphosphonate_oral', 0, NOW()),
         (${q2aId}, 'Bisfosfonato Intravenoso', 'bisphosphonate_iv', 1, NOW()),
         (${q2aId}, 'Denosumabe', 'denosumabe', 2, NOW()),
-        (${q2aId}, 'Antiangiogênico', 'antiangiogenic', 3, NOW());
+        (${q2aId}, 'Antiangiogênico', 'antiangiogenic', 3, NOW()),
+        (${q2aId}, 'Romosozumabe', 'romosozumabe', 4, NOW());
     `);
 
     // Update Q1 "Yes" option to branch to Q2a

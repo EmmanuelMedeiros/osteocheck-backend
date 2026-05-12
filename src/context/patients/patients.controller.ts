@@ -7,6 +7,15 @@ export class PatientsController {
     this.patientsService = patientsService
   }
 
+  getAll = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { statusCode, ...response } = await this.patientsService.findAll();
+      return res.status(statusCode).send(response);
+    } catch (err: any) {
+      return res.status(err.statusCode || 500).send({ error: err.message });
+    }
+  }
+
   create = async (req: Request, res: Response): Promise<Response> => {
     try {
       const professionalId = req.professional.id;

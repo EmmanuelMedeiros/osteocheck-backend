@@ -10,5 +10,6 @@ const router = Router();
 
 router.post('/patients', authMiddleware(), validateRequest(patientsRequest.create), patientsController.create);
 router.get('/patients/:id', authMiddleware(), patientsController.getById);
+router.get('/patients', authMiddleware(), patientsController.getAll);
 
 export default router;

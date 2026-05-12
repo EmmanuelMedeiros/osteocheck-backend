@@ -20,10 +20,20 @@ export class PatientsService implements IPatientsService {
     this.professionalService = professionalService;
   }
 
+  findAll = async (): Promise<ServiceResponse<Patient[]>> => {
+    const patients = await this.patientsRepository.find();
+    return serviceResponse({
+      data: patients,
+      statusCode: 200,
+    });
+  }
+
   findById = async (patientId: number): Promise<ServiceResponse<Patient | null>> => {
     const patient = await this.patientsRepository.findOne({
       relations: {
-        questionnaireResponses: true,
+        questionnaireResponses: {
+          professional: true,
+        },
       },
       where: {
         id: patientId,

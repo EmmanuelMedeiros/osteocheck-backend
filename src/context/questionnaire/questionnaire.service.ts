@@ -358,6 +358,7 @@ export class QuestionnaireService implements IQuestionnaireService {
     const questionnaireResponse = await this.questionnaireResponseRepository.findOne({
       relations: {
         patient: true,
+        professional: true,
         answers: {
           question: true,
           option: true,
@@ -380,10 +381,7 @@ export class QuestionnaireService implements IQuestionnaireService {
       });
     }
 
-    const professional = await this.dataSource.getRepository(Professional).findOne({
-      where: { id: generatePdfDTO.professionalId }
-    });
-
+    const professional = questionnaireResponse.professional;
     if (!professional) {
       throw HttpResponse.notFound({
         message: 'Profissional não encontrado.',
