@@ -92,6 +92,7 @@ export class ProfessionalController {
       const { statusCode, ...response } = await this.professionalService.getProfile(professionalId);
       return res.status(statusCode).send(response);
     } catch (err: any) {
+      console.log(err);
       return res.status(err.statusCode || 500).send({ error: err.message });
     }
   }
@@ -104,7 +105,6 @@ export class ProfessionalController {
       if (page && limit) {
         paginationOptions = { page: Number(page), limit: Number(limit) }
       }
-
       const response = await this.professionalService.getLastQuestionnaireResponses(professionalId, paginationOptions);
       return res.status(200).send(response);
     } catch (err: any) {

@@ -21,7 +21,7 @@ router.put(
 )
 
 router.get(
-  "/professional/:id",
+  "/professional/findById/:id",
   authMiddleware(),
   professionalController.findById
 )

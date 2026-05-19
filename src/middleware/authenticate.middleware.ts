@@ -6,6 +6,7 @@ export function authMiddleware() {
   const jwtService = new JWTService();
   return (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log(req.headers.authorization);
       const bearerToken = req.headers.authorization;
       const extractedToken = extractBearerToken(bearerToken);
       const professional = jwtService.verify(extractedToken);

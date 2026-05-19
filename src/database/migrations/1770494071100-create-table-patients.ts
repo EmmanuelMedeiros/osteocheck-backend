@@ -20,7 +20,7 @@ export class CreateTablePatients1770494071100 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: "cpf",
+                        name: "identifier",
                         type: "varchar",
                         isNullable: false,
                         isUnique: true,
@@ -55,8 +55,8 @@ export class CreateTablePatients1770494071100 implements MigrationInterface {
                 ],
                 indices: [
                     {
-                        name: "IDX_PATIENTS_CPF",
-                        columnNames: ["cpf"],
+                        name: "IDX_PATIENTS_IDENTIFIER",
+                        columnNames: ["identifier"],
                     },
                     {
                         name: "IDX_PATIENTS_DELETED_AT",

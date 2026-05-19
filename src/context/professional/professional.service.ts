@@ -124,7 +124,6 @@ export class ProfessionalService implements IProfessionalService {
 
   confirmForgotPasswordToken = async (confirmForgotPasswordTokenDTO: ConfirmForgotPasswordTokenDTO): Promise<ServiceResponse<null>> => {
     const professional = await this.findProfessionalByEmail(confirmForgotPasswordTokenDTO.email);
-    console.log(professional);
     if (!professional) {
       throw HttpResponse.badRequest({
         message: 'Esse usuário não existe!',
@@ -302,6 +301,7 @@ export class ProfessionalService implements IProfessionalService {
           email: ILike(email),
         },
       });
+
       if (!user) {
         throw HttpResponse.badRequest({
           message: 'Não existe usuário com essas credenciais no sistema',
